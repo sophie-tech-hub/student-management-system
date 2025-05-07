@@ -1,0 +1,45 @@
+<?php
+require 'config.php';
+
+if (isset($_GET['id'])) {
+    $student_id = $_GET['id'];
+
+    // Fetch student academic records
+    $sql = "SELECT * FROM academic_records WHERE student_id = ?";
+    $stmt = $connection->prepare($sql);
+    $stmt->bind_param("s", $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $academic_records = [];
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $academic_records[] = $row;
+        }
+    } else {
+        echo "No academic records found.";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Academic Records</title>
+</head>
+<body>
+    <h2>Student Academic Records</h2>
+    <table>
+        <tr>
+            <th>Record Description</th>
+            <th>Date</th>
+        </tr>
+        <?php foreach ($academic_records as $record): ?>
+        <tr>
+            <td><?= htmlspecialchars($record['record_description']) ?></td>
+            <td><?= htmlspecialchars($record['date']) ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+</body>
+</html>
